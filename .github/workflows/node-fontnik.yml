@@ -1,0 +1,74 @@
+#
+# This is free software, lisence use MIT.
+# 
+# Copyright (C) 2019 P3TERX <https://p3terx.com>
+# Copyright (C) 2020 KFERMercer <KFER.Mercer@gmail.com>
+#
+# <https://github.com/KFERMercer/OpenWrt-CI> 
+#
+
+name: node-fontnik
+
+on:
+  push:
+    branches:
+      - master
+  # schedule:
+  #   - cron: 0 20 * * *
+  release:
+    types: [published]
+
+jobs:
+
+  build_node_fontnik:
+    name: Build Node Fontnik
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [16.14.2] #指定node版本
+    if: github.event.repository.owner.id == github.event.sender.id
+
+    steps:
+      - name: List Repo Files
+        run: |
+          echo "源文件列表······"
+          ls -lth
+
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }} #使用action安装node环境
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+      - run: |
+          echo node version: $(node -v)
+          echo npm version: $(npm -v)
+          npm install
+
+      - name: Start Build
+        run: |
+          mkdir fonts_out
+          node start.js fonts/MiSans fonts_out
+
+      - name: Prepare artifact
+        run: |
+          echo "=======================编译后的目标文件列表如下：======================="
+          tree fonts_out
+          echo "=======================显示完成======================================="
+          tar cvf fonts_out.tar fonts_out
+          mkdir artifact
+          mv fonts_out.tar artifact
+
+      - name: Deliver fonts out
+        uses: actions/upload-artifact@v2
+        with:
+          name: fonts
+          path: ./artifact
+
+      - name: Upload release asset
+        if: github.event == 'release'
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.YOURTOKEN }}
+          file: ./artifact/*
+          tag: ${{ github.ref }}
+          file_glob: true
