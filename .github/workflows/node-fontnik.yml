@@ -34,6 +34,8 @@ jobs:
           echo "当前目录：$(pwd)"
           echo "源文件列表······"
           ls -ltha
+          echo "父目录文件列表······"
+          ls -ltha ..
 
       - name: Space cleanup
         env:
@@ -62,7 +64,11 @@ jobs:
       - run: |
           echo node version: $(node -v)
           echo npm version: $(npm -v)
+          echo "=======================安装node-gyp依赖======================================"
           sudo npm i node-gyp -g
+          echo "=======================执行make命令======================================"
+          make
+          echo "=======================执行npm install======================================"
           npm install
 
       - name: Start Build
