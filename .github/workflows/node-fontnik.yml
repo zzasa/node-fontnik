@@ -33,8 +33,7 @@ jobs:
         run: |
           echo "当前目录：$(pwd)"
           echo "源文件列表······"
-          cd node-fontnik
-          ls -lth
+          ls -ltha
 
       - uses: actions/checkout@v2
       - name: Use Node.js ${{ matrix.node-version }} #使用action安装node环境
