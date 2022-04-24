@@ -44,6 +44,7 @@ jobs:
       - run: |
           echo node version: $(node -v)
           echo npm version: $(npm -v)
+          npm i node-gyp -g
           npm install
 
       - name: Start Build
