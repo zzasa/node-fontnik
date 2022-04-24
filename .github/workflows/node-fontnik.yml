@@ -31,7 +31,9 @@ jobs:
     steps:
       - name: List Repo Files
         run: |
+          echo "当前目录：$(pwd)"
           echo "源文件列表······"
+          cd node-fontnik
           ls -lth
 
       - uses: actions/checkout@v2
